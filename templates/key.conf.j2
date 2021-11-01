@@ -1,0 +1,63 @@
+server {
+  server_name  {{ keycloak_server }};
+  listen   80;
+  listen [::]:80;
+
+  return 301 https://$host$request_uri;
+}
+
+upstream backend_{{ nginx_subdomain | replace('.','') }} {
+    ip_hash;
+
+    server {{ nginx_upstream }};
+}
+
+server {
+        server_name {{ keycloak_server }};
+
+        listen 443 ssl http2;
+        listen [::]:443 ssl http2;
+        access_log /var/log/nginx/access.log anonymized;
+
+  # # Redirect server error pages to the static page /50x.html
+  # #
+  # error_page   500 502 503 504  /50x.html;
+  # location = /50x.html {
+  #         root   /etc/nginx/html;
+  # }
+  
+  # error_page   403 /403.html;
+  # location = /403.html {
+  #         root   /etc/nginx/html;
+  # }
+      include snippets/ssl.conf;
+
+      {% if existing_certs is defined and existing_certs|bool==true %}
+        ssl_certificate {{ ssl_certs_path }}/{{ nginx_domain }}.crt;
+        ssl_certificate_key {{ ssl_private_path }}/{{ nginx_domain }}.key;
+      {% elif container_cert_path is defined %}
+        ssl_certificate {{ container_cert_path }};
+        ssl_certificate_key {{ container_key_path }};
+      {% endif %}
+
+      {% if existing_certs is defined and existing_certs|bool==false %}
+        location /.well-known/acme-challenge {
+            types { } default_type "text/plain";
+            root /var/www/letsencrypt;
+            try_files $uri $uri/ =404;
+            break;
+        }
+      {% endif %}
+
+        location / {
+            proxy_pass    http://backend_{{ nginx_subdomain | replace('.','') }}; 
+
+            proxy_set_header    Host               $host;
+            proxy_set_header    X-Real-IP          $remote_addr;
+            proxy_set_header    X-Forwarded-For    $proxy_add_x_forwarded_for;
+            proxy_set_header    X-Forwarded-Host   $host;
+            proxy_set_header    X-Forwarded-Server $host;
+            proxy_set_header    X-Forwarded-Port   $server_port;
+            proxy_set_header    X-Forwarded-Proto  $scheme;
+        }
+}

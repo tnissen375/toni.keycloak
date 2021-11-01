@@ -1,0 +1,23 @@
+---
+# - name: restart nginx docker
+#   when: nginx_run_as is defined and not nginx_run_as=="stack"
+#   docker_compose:
+#     project_src: "/root/openresty"
+#     restarted: yes
+# #    recreate: always
+
+# - name: restart keycloak
+#   docker_compose:
+#     project_src: /root/keycloak
+#     #remove_volumes: yes
+#     remove_orphans: yes
+#   when: nginx_run_as is defined and not nginx_run_as=="stack"
+
+# - name: restart nginx stack
+#   when: nginx_run_as is defined and nginx_run_as=="stack"
+#   docker_stack:
+#     state: present
+#     prune: yes
+#     name: nginx
+#     compose:
+#       - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"

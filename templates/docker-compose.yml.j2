@@ -1,0 +1,66 @@
+---
+version: '3.7'
+networks:
+  {{ nginx_network_name }}:
+    external: true
+  {{ stack_network_name }}:
+    external: true
+
+#https://quay.io/repository/keycloak/keycloak?tag=latest&tab=tags
+services:
+  {{ deploy_name }}_postgres:
+      image: {{ keycloak_pg_image }}
+      volumes:
+        - {{ deploy_name }}_postgres:/var/lib/postgresql/data
+        - /etc/localtime:/etc/localtime:ro
+      environment:
+        POSTGRES_DB: "{{ keycloak_db_name }}"
+        POSTGRES_USER: "{{ keycloak_db_user }}"
+        POSTGRES_PASSWORD: "{{ keycloak_db_pass }}"
+      networks:
+        - {{ stack_network_name }}
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U {{ keycloak_db_user }}"]
+        interval: 10s
+        timeout: 5s
+        retries: 5             
+  {{ deploy_name }}:
+      image: {{ keycloak_image }}
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: {{ deploy_name }}_postgres
+        DB_DATABASE: "{{ keycloak_db_name }}"
+        DB_USER: "{{ keycloak_db_user }}"
+        DB_SCHEMA: public
+        DB_PASSWORD: "{{ keycloak_db_pass }}"
+        KEYCLOAK_USER: "{{ keycloak_admin_user }}"
+        KEYCLOAK_PASSWORD: "{{ keycloak_admin_pass }}"
+        PROXY_ADDRESS_FORWARDING: "true"
+#        KEYCLOAK_LOGLEVEL: "DEBUG"
+        REDIRECT-SOCKET: "proxy-https"
+        KC_PROXY: "edge"
+        KEYCLOAK_IMPORT: /usr/import/realm.json
+        # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order t$
+        #JDBC_PARAMS: "ssl=true"
+# export @ startup
+#      command: -b 0.0.0.0 -Djboss.http.port=8080 -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/export.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+      volumes:
+        - ./realm.json:/usr/import/realm.json
+        - ./terms.ftl:/opt/jboss/keycloak/themes/base/login/terms.ftl
+        - ./messages_de.properties:/opt/jboss/keycloak/themes/base/login/messages/messages_de.properties
+        - ./messages_en.properties:/opt/jboss/keycloak/themes/base/login/messages/messages_en.properties
+        - /etc/localtime:/etc/localtime:ro
+      ports:
+        - 8080
+      networks:
+        - {{ nginx_network_name }}
+        - {{ stack_network_name }}
+
+volumes:
+  {{ deploy_name }}_postgres:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "{{ keycloak_pg_data_dir }}"
+
+

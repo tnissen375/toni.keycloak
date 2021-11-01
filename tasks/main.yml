@@ -1,0 +1,154 @@
+---
+- name: Register nginx.conf file
+  stat:
+    path: "{{ nginx_conf_dir }}/nginx.conf"
+  register: nginx_conf_file  
+
+- file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+  loop:
+    "{{ dir_exists }}"
+
+- name: Deploy Make
+  template:
+    src: "Makefile.j2"
+    dest: "{{ user_path }}/{{ deploy_name }}/Makefile"
+
+- name: Create network
+  include_role:
+    name: toni.docker
+    tasks_from: create_network
+  vars:
+    ipam_driver_options:
+      encrypted: "false"
+    docker_networks:
+      - { name: "{{ stack_network_name }}", subnet: "{{ stack_subnet }}", driver: "overlay", internal: 'no', gateway: "" }
+  when: create_stack_network|default(false)
+
+- name: Generate docker-compose.yml file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"
+
+- name: Deploy keycloak vhost
+  template:
+    src: "{{ nginx_subdomain }}conf.j2"
+    dest: "{{ nginx_conf_dir }}/conf.d/{{ nginx_subdomain }}{{ nginx_domain }}.conf"
+
+- name: Deploy keycloak realm
+  template:
+    src: realm.json.j2
+    dest: "{{ user_path }}/{{ deploy_name }}/realm.json"
+
+- name: Deploy terms
+  template:
+    src: terms.ftl.j2
+    dest: "{{ user_path }}/{{ deploy_name }}/terms.ftl"
+
+- name: Deploy message file locale de
+  template:
+    src: messages_de.properties.j2
+    dest: "{{ user_path }}/{{ deploy_name }}/messages_de.properties"
+  
+- name: Deploy message file locale en
+  template:
+    src: messages_en.properties.j2
+    dest: "{{ user_path }}/{{ deploy_name }}/messages_en.properties"
+  
+- name: restart nginx stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: absent
+    name: "{{ nginx_stack }}"
+    compose:
+      - "{{ user_path }}/{{ nginx_stack }}/docker-compose.yml" 
+
+- name: restart nginx stack
+  when: nginx_run_as is defined and nginx_run_as=="stack" and nginx_stack_keep_alive|bool == false
+  docker_stack:
+    state: present
+    prune: yes
+    name: "{{ nginx_stack }}"
+    compose:
+      - "{{ user_path }}/{{ nginx_stack }}/docker-compose.yml" 
+      
+- name: reload nginx stack
+  command: make reload
+  args:
+    chdir: "{{ user_path }}/{{ nginx_stack }}"
+  register: result_reload
+  when: nginx_stack_keep_alive|bool == true
+
+- name: set cert facts 
+  include_role:
+    name: toni.certificates
+    tasks_from: certbot_facts
+  vars:
+    certbot_server: "{{ nginx_subdomain }}{{ nginx_domain }}"
+    record_dns_create: "{{ dns_create }}"
+    record_dns_update: "{{ dns_update }}"    
+ 
+- name: Deploy keycloak vhost
+  when: not existing_certs|bool and certbot_cert_exists|bool
+  template:
+    src: "{{ nginx_subdomain }}conf.j2"
+    dest: "{{ nginx_conf_dir }}/conf.d/{{ nginx_subdomain }}{{ nginx_domain }}.conf"
+
+- name: Configure nginx logs
+  when: nginx_conf_file.stat.exists
+  include_role:
+    name: toni.openresty
+    tasks_from: logs
+  vars:
+    nginx_logfiles:
+      - { conffile: "{{ nginx_conf_dir }}/conf.d/{{ nginx_subdomain }}{{ nginx_domain }}.conf", logdir: "/usr/local/openresty/nginx/logs" }    
+
+- name: Deploy compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"
+
+- name: restart nginx stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: absent
+    name: "{{ nginx_stack }}"
+    compose:
+      - "{{ user_path }}/{{ nginx_stack }}/docker-compose.yml" 
+
+- name: restart nginx stack
+  when: nginx_run_as is defined and nginx_run_as=="stack" and nginx_stack_keep_alive|bool == false
+  docker_stack:
+    state: present
+    prune: yes
+    name: "{{ nginx_stack }}"
+    compose:
+      - "{{ user_path }}/{{ nginx_stack }}/docker-compose.yml" 
+      
+- name: reload nginx stack
+  command: make reload
+  args:
+    chdir: "{{ user_path }}/{{ nginx_stack }}"
+  register: result_reload
+  when: nginx_stack_keep_alive|bool == true
+
+
+- name: restart keycloak stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: absent
+    prune: yes
+    name: "{{ deploy_name }}"
+    compose:
+      - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"
+
+- name: restart keycloak stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: present
+    prune: yes
+    name: "{{ deploy_name }}"
+    compose:
+      - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"   
