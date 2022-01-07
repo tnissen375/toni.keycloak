@@ -27,21 +27,22 @@ keycloak_client_secret: "d8337b2d-85fb-46c0-9fcb-15e2dfeb4d9b" # IMPORTANT: SET 
 keycloak_redirect: "https://lab.jidu.eu/" 
 
 # Configure your email here, so that keycloak can send you mails
+# if using gmail account enable "insecure" apps in you mail account 
 keycloak_server: "{{ nginx_subdomain }}{{ nginx_domain }}"
 keycloak_smtp_password: ""
 keycloak_smtp_tls: "true"
 keycloak_smtp_auth: "true"
-keycloak_smtp_port: "587"
-keycloak_smtp_host: "smtp.gmail.com"
-keycloak_smtp_from: "jidumailer@gmail.com"
-keycloak_smtp_display_name: "jidumailer"
+keycloak_smtp_port: "587" # p.e.
+keycloak_smtp_host: "smtp.<your_domain>.com" # p.e.
+keycloak_smtp_from: ""
+keycloak_smtp_display_name: ""
 keycloak_smtp_ssl: "false"
-keycloak_smtp_user: "jidumailer@gmail.com"
-keycloak_user_username: 'jidu'
-keycloak_user_firstName: "ji"
-keycloak_user_lastName: "du"
-keycloak_user_email: "jidumailer@gmail.com"
-keycloak_user_locale: "de"
+keycloak_smtp_user: ""
+keycloak_user_username: ""
+keycloak_user_firstName: ""
+keycloak_user_lastName: ""
+keycloak_user_email: "" 
+keycloak_user_locale: "de" #adjust
 ```
 
 License
