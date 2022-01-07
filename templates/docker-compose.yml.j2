@@ -36,9 +36,6 @@ services:
         KEYCLOAK_USER: "{{ keycloak_admin_user }}"
         KEYCLOAK_PASSWORD: "{{ keycloak_admin_pass }}"
         PROXY_ADDRESS_FORWARDING: "true"
-#        KEYCLOAK_LOGLEVEL: "DEBUG"
-        REDIRECT-SOCKET: "proxy-https"
-        KC_PROXY: "edge"
         KEYCLOAK_IMPORT: /usr/import/realm.json
         # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order t$
         #JDBC_PARAMS: "ssl=true"

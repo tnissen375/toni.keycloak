@@ -6,11 +6,10 @@ server {
   return 301 https://$host$request_uri;
 }
 
-upstream backend_{{ nginx_subdomain | replace('.','') }} {
-    ip_hash;
-
-    server {{ nginx_upstream }};
-}
+# upstream backend_{{ nginx_subdomain | replace('.','') }} {
+#     ip_hash;
+#     server {{ nginx_upstream }};
+# }
 
 server {
         server_name {{ keycloak_server }};
@@ -50,8 +49,9 @@ server {
       {% endif %}
 
         location / {
-            proxy_pass    http://backend_{{ nginx_subdomain | replace('.','') }}; 
-
+#            proxy_pass    http://backend_{{ nginx_subdomain | replace('.','') }}; 
+            set $upstream {{ nginx_upstream }};
+            proxy_pass          $upstream;
             proxy_set_header    Host               $host;
             proxy_set_header    X-Real-IP          $remote_addr;
             proxy_set_header    X-Forwarded-For    $proxy_add_x_forwarded_for;

@@ -1,38 +1,50 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Ansible role to install keycloak open source identity and access management which automaticly integrates with an (authenticating) openresty reverse-proxy. Its used by me to run SSO stacks. It uses a preconfigured realm called "Intern" and a client called "Nginx" if you dont configure it otherwise. You have to change the **keycloak_client_secret** before you install for security reasons.
 
-Requirements
-------------
+Some variables from the role default section wich can be overriden if needed.
+```yaml
+deploy_name: "key" # will be used to prefix docker stack
+nginx_subdomain: "{{ deploy_name }}." # subdomain derived from deploy name, you do not need to change it - but you can
+nginx_upstream: "http://{{ deploy_name }}:8080" # nginx stack needs to know where to reach keycloak, you do not need to change it - but you can
+dns_create: false # only if you use hetzner hosting provider or extended the toni.dns role to take other providers - so dont use
+dns_update: false # only if you use hetzner hosting provider or extended the toni.dns role to take other providers - so dont use
+nginx_stack: "openresty" # ansible needs to know the name you gave the openresty stack
+nginx_stack_keep_alive: false # during setup its possible to restart the openresty stack or to reload it (keep alive)
+nginx_network_name: "nginx_net" # default - not created by this stack
+create_stack_network: true # default - seperate networks for each stack
+stack_network_name: "key_net" # default - will be created for this stack
+stack_subnet: "10.10.20.0/24" # :)
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+keycloak_image: "quay.io/keycloak/keycloak:16.1.0" # keycloak image used
+keycloak_pg_image: "postgres:13" # postgres image used
+keycloak_pg_data_dir: "{{ user_path }}/{{ deploy_name }}/data/keycloak/postgres_data"
 
-Role Variables
---------------
+keycloak_realm: "Intern"
+keycloak_client_name: "Nginx"
+keycloak_client_secret: "d8337b2d-85fb-46c0-9fcb-15e2dfeb4d9b" # IMPORTANT: SET YOUR OWN SECRET - notation as to the left
+keycloak_redirect: "https://lab.jidu.eu/" 
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+# Configure your email here, so that keycloak can send you mails
+keycloak_server: "{{ nginx_subdomain }}{{ nginx_domain }}"
+keycloak_smtp_password: ""
+keycloak_smtp_tls: "true"
+keycloak_smtp_auth: "true"
+keycloak_smtp_port: "587"
+keycloak_smtp_host: "smtp.gmail.com"
+keycloak_smtp_from: "jidumailer@gmail.com"
+keycloak_smtp_display_name: "jidumailer"
+keycloak_smtp_ssl: "false"
+keycloak_smtp_user: "jidumailer@gmail.com"
+keycloak_user_username: 'jidu'
+keycloak_user_firstName: "ji"
+keycloak_user_lastName: "du"
+keycloak_user_email: "jidumailer@gmail.com"
+keycloak_user_locale: "de"
+```
 
 License
 -------
 
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+MIT

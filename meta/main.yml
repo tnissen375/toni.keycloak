@@ -26,12 +26,18 @@ galaxy_info:
   # If you don't wish to enumerate all versions for a particular platform, use 'all'.
   # To view available platforms and versions (or releases), visit:
   # https://galaxy.ansible.com/api/v1/platforms/
-  # 
-  platforms:
-    - name: Ubuntu
-      versions:
-      - 18
-      - 20
+  #
+  # platforms:
+  # - name: Fedora
+  #   versions:
+  #   - all
+  #   - 25
+  # - name: SomePlatform
+  #   versions:
+  #   - all
+  #   - 1.0
+  #   - 7
+  #   - 99.99
 
   galaxy_tags: []
     # List tags for your role here, one per line. A tag is a keyword that describes
@@ -44,3 +50,4 @@ galaxy_info:
 dependencies: []
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
   # if you add dependencies to this list.
+  
