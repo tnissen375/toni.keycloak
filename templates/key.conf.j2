@@ -16,7 +16,9 @@ server {
 
         listen 443 ssl http2;
         listen [::]:443 ssl http2;
-        access_log /var/log/nginx/access.log anonymized;
+
+  access_log  /dev/stdout main;
+  error_log /dev/stderr warn;
 
   # # Redirect server error pages to the static page /50x.html
   # #
