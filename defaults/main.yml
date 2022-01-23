@@ -44,8 +44,8 @@ keycloak_user_lastName: ""
 keycloak_user_email: ""
 keycloak_user_locale: "de"
 
-#todo: add to messages_de.properties to automaticly - so that the newest templeates are used
-#the messages files here are from keycloak 15
+#todo: add to messages_de.properties automaticly - so that the newest templeates are used
+#the messages files here are from keycloak 16.1
 keycloak_termsTitle_de: "Bedingungen und Konditionen"
 keycloak_termsText_de: "<p>Zu definierende Bedingungen und Konditionen.</p>"
 keycloak_termsPlainText_de: "Zu definierende Bedingungen und Konditionen."
