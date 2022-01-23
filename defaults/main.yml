@@ -10,6 +10,7 @@ ssl_private_path: /etc/nginx/ssl/private
 deploy_name: "key"
 nginx_subdomain: "{{ deploy_name }}."
 nginx_upstream: "http://{{ deploy_name }}:8080"
+enable_backup: true
 dns_create: false
 dns_update: false
 nginx_stack: "openresty"
