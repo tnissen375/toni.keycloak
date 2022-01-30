@@ -537,7 +537,7 @@
     "clientAuthenticatorType": "client-secret",
     "secret": "{{ keycloak_client_secret }}",
     "redirectUris": [
-      "*"
+      "https://{{ domain }}/*"
     ],
     "webOrigins": [
       "https://{{ domain }}"

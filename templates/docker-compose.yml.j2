@@ -55,9 +55,9 @@ services:
 
 volumes:
   {{ deploy_name }}_postgres:
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "{{ keycloak_pg_data_dir }}"
+    # driver_opts:
+    #   type: "none"
+    #   o: "bind"
+    #   device: "{{ keycloak_pg_data_dir }}"
 
 
