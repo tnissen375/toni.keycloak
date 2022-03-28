@@ -1,0 +1,36 @@
+---
+- name: "Wait until server is accessible"
+  uri:
+    url: "https://{{ keycloak_server }}/"
+    status_code: 200
+    validate_certs: no
+  register: result
+  ignore_errors: yes
+  until: result.status == 200
+  retries: 3
+  delay: 10  
+
+- name: Create a Keycloak client role
+  when: keycloak_client_name is defined and keycloak_client_name!=""
+  community.general.keycloak_role:
+    name: "{{ keycloak_role_name }}"
+    realm: "{{ keycloak_realm }}"
+    client_id: "{{ keycloak_client_name }}"
+    state: "{{ keycloak_role_state }}"
+    auth_client_id: admin-cli
+    auth_keycloak_url: "https://{{ keycloak_server }}/"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_pass }}"
+
+- name: Create a Keycloak realm role
+  when: keycloak_client_name is undefined or keycloak_client_name==""
+  community.general.keycloak_role:
+    name: "{{ keycloak_role_name }}"
+    realm: "{{ keycloak_realm }}"
+    state: "{{ keycloak_role_state }}"
+    auth_client_id: admin-cli
+    auth_keycloak_url: "https://{{ keycloak_server }}/"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_pass }}"

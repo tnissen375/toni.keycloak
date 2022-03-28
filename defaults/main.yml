@@ -20,14 +20,45 @@ create_stack_network: true
 stack_network_name: "key_net"
 stack_subnet: "10.10.20.0/24"
 
-keycloak_image: "quay.io/keycloak/keycloak:16.1.0"
+keycloak_image: "quay.io/keycloak/keycloak:17.0.1"
 keycloak_pg_image: "postgres:14"
 keycloak_pg_data_dir: "{{ user_path }}/{{ deploy_name }}/data/keycloak/postgres_data"
 
+keycloak_proxy: "edge"
+keycloak_features: "authorization, dynamic-scopes, preview, token-exchange"
+keycloak_cache: "local"
+keycloak_metrics_enabled: "false"
+
 keycloak_realm: "Intern"
+keycloak_realm_state: "present"
+keycloak_realm_enabled: True
+keycloak_client_enabled: True
+keycloak_client_state: "present"
+keycloak_role_state: "present"
+keycloak_role_name: ""
 keycloak_client_name: "Nginx"
 keycloak_client_secret: "d8337b2d-85fb-46c0-9fcb-15e2dfeb4d9b"
+
 keycloak_redirect: "https://lab.jidu.eu/"
+keycloak_redirect_uris:
+  - "{{keycloak_redirect}}"
+keycloak_web_origins:
+  - "{{keycloak_redirect}}/*"
+keycloak_root_url: "{{ keycloak_redirect }}"
+keycloak_admin_url: ""
+keycloak_base_url: ""
+keycloak_bearer_only: False
+keycloak_consent_required: False
+keycloak_standard_flow_enabled: True
+keycloak_implicit_flow_enabled: False
+keycloak_direct_access_grants_enabled: False
+keycloak_service_accounts_enabled: False
+keycloak_authorization_services_enabled: False
+keycloak_public_client: False
+keycloak_frontchannel_logout: False
+keycloak_full_scope_allowed: True
+keycloak_client_default_roles: 
+  - "user"
 
 keycloak_server: "{{ nginx_subdomain }}{{ nginx_domain }}"
 keycloak_smtp_password: ""
@@ -45,15 +76,9 @@ keycloak_user_lastName: ""
 keycloak_user_email: ""
 keycloak_user_locale: "de"
 
-#todo: add to messages_de.properties automaticly - so that the newest templeates are used
-#the messages files here are from keycloak 16.1
-keycloak_termsTitle_de: "Bedingungen und Konditionen"
-keycloak_termsText_de: "<p>Zu definierende Bedingungen und Konditionen.</p>"
-keycloak_termsPlainText_de: "Zu definierende Bedingungen und Konditionen."
-keycloak_termsTitle_en: "Terms and Conditions"
-keycloak_termsText_en: "<p>Terms and conditions to be defined.</p>"
-keycloak_termsPlainText_en: "Terms and conditions to be defined."
-
+#Default theme
+#/opt/keycloak/lib/lib/main/org.keycloak.keycloak-themes-17.0.1.jar
+# \org.keycloak.keycloak-themes-17.0.1\theme\base\login\messages\messages_de.properties -> termsText=<p>Zu definierende Bedingungen und Konditionen</p>
 dir_exists:
   - "{{ keycloak_pg_data_dir }}"
   - "{{ user_path }}/{{ deploy_name }}/backup"

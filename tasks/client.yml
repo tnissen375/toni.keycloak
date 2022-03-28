@@ -1,0 +1,46 @@
+---
+- name: "Wait until server is accessible"
+  uri:
+    url: "https://{{ keycloak_server }}/"
+    status_code: 200
+    validate_certs: no
+  register: result
+  ignore_errors: yes
+  until: result.status == 200
+  retries: 3
+  delay: 10  
+
+- name: Create or update a Keycloak client (with all the bells and whistles)
+  community.general.keycloak_client:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "https://{{ keycloak_server }}/"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_pass }}"
+    state: "{{ keycloak_client_state }}"
+    realm: "{{ keycloak_realm }}"
+    client_id: "{{ keycloak_client_name }}"
+#    id: d8b127a3-31f6-44c8-a7e4-4ab9a3e78d95
+    name: "{{ keycloak_client_name }}"
+    description: ""
+    root_url: "{{ keycloak_root_url }}"
+    admin_url: "{{ keycloak_admin_url }}"
+    base_url: "{{ keycloak_base_url }}"
+    enabled: "{{ keycloak_client_enabled }}"
+    client_authenticator_type: client-secret
+    secret: "{{ keycloak_client_secret }}"
+    redirect_uris: "{{ keycloak_redirect_uris }}"
+    web_origins: "{{ keycloak_web_origins }}"
+#    not_before: 1507825725
+    bearer_only: "{{ keycloak_bearer_only }}"
+    consent_required: "{{ keycloak_consent_required }}"
+    standard_flow_enabled: "{{ keycloak_standard_flow_enabled }}"
+    implicit_flow_enabled: "{{ keycloak_implicit_flow_enabled }}"
+    direct_access_grants_enabled: "{{ keycloak_direct_access_grants_enabled }}"
+    service_accounts_enabled: "{{ keycloak_service_accounts_enabled }}"
+    authorization_services_enabled: "{{ keycloak_authorization_services_enabled }}"
+    public_client: "{{ keycloak_public_client }}"
+    frontchannel_logout: "{{ keycloak_frontchannel_logout }}"
+    protocol: openid-connect
+    full_scope_allowed: "{{ keycloak_full_scope_allowed }}"
+    #default_roles: "{{ keycloak_client_default_roles }}"

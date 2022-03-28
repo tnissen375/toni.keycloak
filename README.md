@@ -17,14 +17,13 @@ create_stack_network: true # default - seperate networks for each stack
 stack_network_name: "key_net" # default - will be created for this stack
 stack_subnet: "10.10.20.0/24" # :)
 
-keycloak_image: "quay.io/keycloak/keycloak:16.1.0" # keycloak image used
-keycloak_pg_image: "postgres:13" # postgres image used
-keycloak_pg_data_dir: "{{ user_path }}/{{ deploy_name }}/data/keycloak/postgres_data"
+keycloak_image: "quay.io/keycloak/keycloak:17.0.1" # keycloak image used
+keycloak_pg_image: "postgres:14" # postgres image used
 
 keycloak_realm: "Intern"
 keycloak_client_name: "Nginx"
 keycloak_client_secret: "d8337b2d-85fb-46c0-9fcb-15e2dfeb4d9b" # IMPORTANT: SET YOUR OWN SECRET - notation as to the left
-keycloak_redirect: "https://lab.jidu.eu/" 
+keycloak_redirect: "https://lab.<your_domain>.com/" #adjust
 
 # Configure your email here, so that keycloak can send you mails
 # if using gmail account enable "insecure" apps in you mail account 
@@ -33,7 +32,7 @@ keycloak_smtp_password: ""
 keycloak_smtp_tls: "true"
 keycloak_smtp_auth: "true"
 keycloak_smtp_port: "587" # p.e.
-keycloak_smtp_host: "smtp.<your_domain>.com" # p.e.
+keycloak_smtp_host: "smtp.<your_domain>.com" # adjust
 keycloak_smtp_from: ""
 keycloak_smtp_display_name: ""
 keycloak_smtp_ssl: "false"

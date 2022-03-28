@@ -1,0 +1,36 @@
+---
+- name: "Wait until server is accessible"
+  uri:
+    url: "https://{{ keycloak_server }}/"
+    status_code: 200
+    validate_certs: no
+  register: result
+  ignore_errors: yes
+  until: result.status == 200
+  retries: 3
+  delay: 10  
+
+- name: Create or update Keycloak realm
+  community.general.keycloak_realm:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "https://{{ keycloak_server }}/"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_pass }}"
+    realm: "{{ keycloak_realm }}"
+    default_locale: "{{keycloak_user_locale}}"
+    enabled: "{{keycloak_realm_enabled}}"
+    smtp_server:
+      replyToDisplayName: "{{keycloak_smtp_display_name}}"
+      ssl: "{{keycloak_smtp_ssl}}"
+      starttls: "{{keycloak_smtp_tls}}"
+      auth: "{{keycloak_smtp_auth}}"
+      password: "{{keycloak_smtp_password}}"
+      port: "{{keycloak_smtp_port}}"
+      host: "{{keycloak_smtp_host}}"
+      replyTo: "{{keycloak_user_email}}"
+      from: "{{keycloak_smtp_from}}"
+      fromDisplayName: "{{keycloak_smtp_display_name}}"
+      user: "{{keycloak_smtp_user}}"
+    id: "{{ keycloak_realm }}"
+    state: "{{ keycloak_realm_state }}"

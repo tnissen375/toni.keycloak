@@ -37,26 +37,6 @@
     src: "{{ nginx_subdomain }}conf.j2"
     dest: "{{ nginx_conf_dir }}/conf.d/{{ nginx_subdomain }}{{ nginx_domain }}.conf"
 
-- name: Deploy keycloak realm
-  template:
-    src: realm.json.j2
-    dest: "{{ user_path }}/{{ deploy_name }}/realm.json"
-
-- name: Deploy terms
-  template:
-    src: terms.ftl.j2
-    dest: "{{ user_path }}/{{ deploy_name }}/terms.ftl"
-
-- name: Deploy message file locale de
-  template:
-    src: messages_de.properties.j2
-    dest: "{{ user_path }}/{{ deploy_name }}/messages_de.properties"
-  
-- name: Deploy message file locale en
-  template:
-    src: messages_en.properties.j2
-    dest: "{{ user_path }}/{{ deploy_name }}/messages_en.properties"
-  
 - name: restart nginx stack
   when: nginx_run_as is defined and nginx_run_as=="stack"
   docker_stack:
@@ -160,4 +140,16 @@
     minute: "0"
     hour: "4"
     user: root
-    job: "make -C {{ user_path }}/{{ deploy_name }} completebackup"      
+    job: "make -C {{ user_path }}/{{ deploy_name }} completebackup"
+
+- name: Exec Realm
+  import_tasks: realm.yml
+  tags: [ never, kc_realm ]
+
+- name: Exec Client
+  import_tasks: client.yml
+  tags: [ never, kc_client ]
+
+- name: Exec Role
+  import_tasks: role.yml
+  tags: [ never, kc_role ]
