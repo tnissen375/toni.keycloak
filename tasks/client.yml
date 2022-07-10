@@ -10,7 +10,7 @@
   retries: 3
   delay: 10  
 
-- name: Create or update a Keycloak client (with all the bells and whistles)
+- name: Create or update a Keycloak client
   community.general.keycloak_client:
     auth_client_id: admin-cli
     auth_keycloak_url: "https://{{ keycloak_server }}/"
