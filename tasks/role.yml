@@ -11,7 +11,7 @@
   delay: 10  
 
 - name: Create a Keycloak client role
-  when: keycloak_client_name is defined and keycloak_client_name!=""
+  when: result.status == 200 and keycloak_client_name is defined and keycloak_client_name!=""
   community.general.keycloak_role:
     name: "{{ keycloak_role_name }}"
     realm: "{{ keycloak_realm }}"
@@ -24,7 +24,7 @@
     auth_password: "{{ keycloak_admin_pass }}"
 
 - name: Create a Keycloak realm role
-  when: keycloak_client_name is undefined or keycloak_client_name==""
+  when: result.status == 200 and keycloak_client_name is undefined or keycloak_client_name==""
   community.general.keycloak_role:
     name: "{{ keycloak_role_name }}"
     realm: "{{ keycloak_realm }}"

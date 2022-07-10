@@ -11,6 +11,7 @@
   delay: 10  
 
 - name: Create or update a Keycloak client
+  when: result.status == 200
   community.general.keycloak_client:
     auth_client_id: admin-cli
     auth_keycloak_url: "https://{{ keycloak_server }}/"

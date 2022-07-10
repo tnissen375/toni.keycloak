@@ -2,6 +2,8 @@
 user: "root"
 user_path: "/root"
 nginx_conf_dir: "/etc/nginx"
+configure_ipv4_stack_hostname: true
+configure_ipv6_stack_hostname: false
 container_cert_path: "/etc/ssl/dummy-ssl-fallback.crt"
 container_key_path: "/etc/ssl/dummy-ssl-fallback.key"
 ssl_certs_path: /etc/nginx/ssl/certs

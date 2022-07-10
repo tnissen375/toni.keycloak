@@ -1,4 +1,11 @@
 ---
+- name: set hostname
+  include_role:
+    name: toni.base
+    tasks_from: host
+  vars:
+    deploy_hostname: "{{ deploy_name }}"
+
 - name: Register nginx.conf file
   stat:
     path: "{{ nginx_conf_dir }}/nginx.conf"

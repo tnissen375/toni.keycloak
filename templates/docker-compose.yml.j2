@@ -22,7 +22,8 @@ services:
         test: ["CMD-SHELL", "pg_isready -U {{ keycloak_db_user }} -d {{ keycloak_db_name }}"]
         interval: 10s
         timeout: 5s
-        retries: 5             
+        retries: 5         
+            
   {{ deploy_name }}:
       image: {{ keycloak_image }}
       environment:

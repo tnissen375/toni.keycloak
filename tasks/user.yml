@@ -1,0 +1,27 @@
+---
+- name: "Wait until server is accessible"
+  uri:
+    url: "https://{{ keycloak_server }}/"
+    status_code: 200
+    validate_certs: no
+  register: result
+  ignore_errors: yes
+  until: result.status == 200
+  retries: 3
+  delay: 10  
+
+- name: Create user if not exist
+  command: "make kcadmn cmd='create users -r {{ keycloak_realm }} -s username={{ kcu.username }} -s enabled=true -s firstName={{ kcu.firstname }} -s lastName={{ kcu.lastname }} -s email={{ kcu.email }}'"
+  args:
+    chdir: "{{ user_path }}/{{ keycloak_deploy_name }}"
+  register: result_make
+  ignore_errors: yes
+
+- name: Set temporariy user password
+  command: "make kcadmn cmd='set-password -r {{ keycloak_realm }} --username {{ kcu.username }} --new-password {{ keycloak_temporary_pass }} --temporary'"
+  args:
+    chdir: "{{ user_path }}/{{ keycloak_deploy_name }}"
+  register: result_pass
+  ignore_errors: yes
+
+#- debug: var=result_make.stdout_lines
