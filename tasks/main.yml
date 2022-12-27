@@ -41,8 +41,27 @@
 
 - name: Deploy keycloak vhost
   template:
-    src: "{{ nginx_subdomain }}conf.j2"
+    #src: "{{ nginx_subdomain }}conf.j2"
+    src: "key.conf.j2"
     dest: "{{ nginx_conf_dir }}/conf.d/{{ nginx_subdomain }}{{ nginx_domain }}.conf"
+
+- name: restart keycloak stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: absent
+    prune: yes
+    name: "{{ deploy_name }}"
+    compose:
+      - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"
+
+- name: restart keycloak stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: present
+    prune: yes
+    name: "{{ deploy_name }}"
+    compose:
+      - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml" 
 
 - name: restart nginx stack
   when: nginx_run_as is defined and nginx_run_as=="stack"
@@ -80,7 +99,8 @@
 - name: Deploy keycloak vhost
   when: not existing_certs|bool and certbot_cert_exists|bool
   template:
-    src: "{{ nginx_subdomain }}conf.j2"
+    #src: "{{ nginx_subdomain }}conf.j2"
+    src: "key.conf.j2"
     dest: "{{ nginx_conf_dir }}/conf.d/{{ nginx_subdomain }}{{ nginx_domain }}.conf"
 
 - name: Configure nginx logs
@@ -97,7 +117,15 @@
     src: docker-compose.yml.j2
     dest: "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"
 
-- name: restart keycloak stack
+- name: restart nginx stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: absent
+    name: "{{ nginx_stack }}"
+    compose:
+      - "{{ user_path }}/{{ nginx_stack }}/docker-compose.yml" 
+
+- name: remove keycloak stack
   when: nginx_run_as is defined and nginx_run_as=="stack"
   docker_stack:
     state: absent
@@ -114,14 +142,6 @@
     name: "{{ deploy_name }}"
     compose:
       - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"   
-
-- name: restart nginx stack
-  when: nginx_run_as is defined and nginx_run_as=="stack"
-  docker_stack:
-    state: absent
-    name: "{{ nginx_stack }}"
-    compose:
-      - "{{ user_path }}/{{ nginx_stack }}/docker-compose.yml" 
 
 - name: restart nginx stack
   when: nginx_run_as is defined and nginx_run_as=="stack" and nginx_stack_keep_alive|bool == false

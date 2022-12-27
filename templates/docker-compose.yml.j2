@@ -42,7 +42,7 @@ services:
         KC_METRICS_ENABLED: "{{ keycloak_metrics_enabled }}"
       volumes:
         - /etc/localtime:/etc/localtime:ro
-      command: ["start", "--optimzed"]
+      command: ["start", "--optimized"]
       ports:
         - 8080
       networks:

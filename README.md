@@ -3,6 +3,7 @@ Role Name
 
 Ansible role to install keycloak open source identity and access management which automaticly integrates with an (authenticating) openresty reverse-proxy. Its used by me to run SSO stacks. It uses a preconfigured realm called "Intern" and a client called "Nginx" if you dont configure it otherwise. You have to change the **keycloak_client_secret** before you install for security reasons.
 
+
 Some variables from the role default section wich can be overriden if needed.
 ```yaml
 deploy_name: "key" # will be used to prefix docker stack
@@ -17,7 +18,7 @@ create_stack_network: true # default - seperate networks for each stack
 stack_network_name: "key_net" # default - will be created for this stack
 stack_subnet: "10.10.20.0/24" # :)
 
-keycloak_image: "quay.io/keycloak/keycloak:17.0.1" # keycloak image used
+keycloak_image: "quay.io/keycloak/keycloak:20.0.2" # keycloak image used
 keycloak_pg_image: "postgres:14" # postgres image used
 
 keycloak_realm: "Intern"
@@ -42,6 +43,11 @@ keycloak_user_firstName: ""
 keycloak_user_lastName: ""
 keycloak_user_email: "" 
 keycloak_user_locale: "de" #adjust
+```
+
+Fill in your <domain>. A realm "Intern" will be created. A client named Nginx will be created.
+```yaml
+ansible-playbook install.yml -i ../toni.ansible_inventories/server --vault-id corteza@vault --tags "keycloak, kc_realm" --skip-tags "kc_role" --extra-vars "ansible_ssh_host=89.58.8.242 deploy_name=key nginx_domain=<domain> keycloak_client_name=Nginx"
 ```
 
 License

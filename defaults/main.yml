@@ -41,9 +41,9 @@ keycloak_role_name: ""
 keycloak_client_name: "Nginx"
 keycloak_client_secret: "d8337b2d-85fb-46c0-9fcb-15e2dfeb4d9b"
 
-keycloak_redirect: "https://lab.{{ domain }}"
+keycloak_redirect: "https://lab.{{ domain }}/"
 keycloak_redirect_uris:
-  - "https://corteza.{{ domain }}.com/*"
+  - "{{keycloak_redirect}}"
 keycloak_web_origins:
   - "{{keycloak_redirect}}/*"
 keycloak_root_url: "{{ keycloak_redirect }}"
