@@ -97,6 +97,24 @@
     src: docker-compose.yml.j2
     dest: "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"
 
+- name: restart keycloak stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: absent
+    prune: yes
+    name: "{{ deploy_name }}"
+    compose:
+      - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"
+
+- name: restart keycloak stack
+  when: nginx_run_as is defined and nginx_run_as=="stack"
+  docker_stack:
+    state: present
+    prune: yes
+    name: "{{ deploy_name }}"
+    compose:
+      - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"   
+
 - name: restart nginx stack
   when: nginx_run_as is defined and nginx_run_as=="stack"
   docker_stack:
@@ -121,25 +139,6 @@
   register: result_reload
   when: nginx_stack_keep_alive|bool == true
 
-
-- name: restart keycloak stack
-  when: nginx_run_as is defined and nginx_run_as=="stack"
-  docker_stack:
-    state: absent
-    prune: yes
-    name: "{{ deploy_name }}"
-    compose:
-      - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"
-
-- name: restart keycloak stack
-  when: nginx_run_as is defined and nginx_run_as=="stack"
-  docker_stack:
-    state: present
-    prune: yes
-    name: "{{ deploy_name }}"
-    compose:
-      - "{{ user_path }}/{{ deploy_name }}/docker-compose.yml"   
-
 - name: create backup daily backup by cron file under /etc/cron.d
   when: enable_backup | bool==true
   cron:
@@ -148,6 +147,11 @@
     hour: "4"
     user: root
     job: "make -C {{ user_path }}/{{ deploy_name }} completebackup"
+
+- name: Sleep for 20 seconds and continue
+  wait_for:
+    timeout: 20
+  delegate_to: localhost
 
 - name: Exec Realm
   import_tasks: realm.yml
