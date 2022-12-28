@@ -1,4 +1,9 @@
 ---
+- name: fact
+  when: ow_keycloak_client_name is undefined
+  set_fact:
+    ow_keycloak_client_name: "{{ keycloak_client_name }}"
+
 - name: "Wait until server is accessible"
   uri:
     url: "https://{{ keycloak_server }}/"
@@ -11,10 +16,10 @@
   delay: 10  
 
 - name: Add clientrole for user
-  command: "make kcadmn cmd='add-roles -r {{ keycloak_realm }} --uusername {{ keycloak_username }} --cclientid {{ keycloak_client_name }} --rolename {{ keycloak_role }}'"
+  command: "make kcadmn cmd='add-roles -r {{ keycloak_realm }} --uusername {{ keycloak_username }} --cclientid {{ ow_keycloak_client_name }} --rolename {{ keycloak_role }}'"
   args:
     chdir: "{{ user_path }}/{{ keycloak_deploy_name }}"
   register: result_cr
   ignore_errors: yes
 
-#- debug: var=result_make.stdout_lines
+# - debug: var=result_cr.stdout_lines

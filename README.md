@@ -38,11 +38,6 @@ keycloak_smtp_from: ""
 keycloak_smtp_display_name: ""
 keycloak_smtp_ssl: "false"
 keycloak_smtp_user: ""
-keycloak_user_username: ""
-keycloak_user_firstName: ""
-keycloak_user_lastName: ""
-keycloak_user_email: "" 
-keycloak_user_locale: "de" #adjust
 ```
 
 Fill in your <domain>. A realm "Intern" will be created. A client named Nginx will be created.

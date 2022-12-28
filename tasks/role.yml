@@ -1,4 +1,9 @@
 ---
+- name: fact
+  when: ow_keycloak_client_name is undefined
+  set_fact:
+    ow_keycloak_client_name: "{{ keycloak_client_name }}"
+
 - name: "Wait until server is accessible"
   uri:
     url: "https://{{ keycloak_server }}/"
@@ -12,10 +17,11 @@
 
 - name: Create a Keycloak client role
   when: result.status == 200 and keycloak_client_name is defined and keycloak_client_name!=""
+  register: result_cr
   community.general.keycloak_role:
     name: "{{ keycloak_role_name }}"
     realm: "{{ keycloak_realm }}"
-    client_id: "{{ keycloak_client_name }}"
+    client_id: "{{ ow_keycloak_client_name }}"
     state: "{{ keycloak_role_state }}"
     auth_client_id: admin-cli
     auth_keycloak_url: "https://{{ keycloak_server }}/"
@@ -25,6 +31,7 @@
 
 - name: Create a Keycloak realm role
   when: result.status == 200 and keycloak_client_name is undefined or keycloak_client_name==""
+  register: result_cr
   community.general.keycloak_role:
     name: "{{ keycloak_role_name }}"
     realm: "{{ keycloak_realm }}"
@@ -34,3 +41,5 @@
     auth_realm: master
     auth_username: "{{ keycloak_admin_user }}"
     auth_password: "{{ keycloak_admin_pass }}"
+
+# - debug: var=result_cr.stdout_lines
