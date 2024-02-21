@@ -22,12 +22,12 @@ create_stack_network: true
 stack_network_name: "key_net"
 stack_subnet: "10.10.20.0/24"
 
-keycloak_image: "quay.io/keycloak/keycloak:20.0.2"
-keycloak_pg_image: "postgres:14"
+keycloak_image: "quay.io/keycloak/keycloak:23.0.6"
+keycloak_pg_image: "postgres:16"
 keycloak_pg_data_dir: "{{ user_path }}/{{ deploy_name }}/data/keycloak/postgres_data"
 
 keycloak_proxy: "edge"
-keycloak_features: "authorization, dynamic-scopes, preview, token-exchange"
+keycloak_features: "dynamic-scopes,token-exchange"
 keycloak_cache: "local"
 keycloak_metrics_enabled: "false"
 

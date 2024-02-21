@@ -35,3 +35,8 @@
       user: "{{keycloak_smtp_user}}"
     id: "{{ keycloak_realm }}"
     state: "{{ keycloak_realm_state }}"
+  register: result_cr
+  ignore_errors: yes
+
+#- debug: var=result_cr.msg
+- debug: var=result_cr.existing

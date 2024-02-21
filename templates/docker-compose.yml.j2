@@ -30,11 +30,16 @@ services:
         KC_PROXY: "{{ keycloak_proxy }}"
         KC_HOSTNAME: "{{ keycloak_server }}"
         KC_DB: "postgres"
-        KC_DB_URL: "jdbc:postgresql://{{ deploy_name }}_postgres/{{ keycloak_db_name }}"
+#        KC_DB_URL: "jdbc:postgresql://{{ deploy_name }}_postgres/{{ keycloak_db_name }}"
+        KC_DB_URL_HOST: "{{ deploy_name }}_postgres"
         KC_DB_USERNAME: "{{ keycloak_db_user }}"
         KC_DB_PASSWORD: "{{ keycloak_db_pass }}"
         KC_FEATURES: "{{ keycloak_features }}"
         KC_CACHE: "{{ keycloak_cache }}"
+        KC_DB_SCHEMA: "public"
+        KC_HOSTNAME_STRICT_HTTPS: "true"
+        KC_HOSTNAME_STRICT: "true"
+        HTTP_ADDRESS_FORWARDING: "true"
         KEYCLOAK_ADMIN: "{{ keycloak_admin_user }}"
         KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_admin_pass }}"
 #       KC_HTTPS_KEY_STORE_FILE: "keystore"
@@ -42,7 +47,9 @@ services:
         KC_METRICS_ENABLED: "{{ keycloak_metrics_enabled }}"
       volumes:
         - /etc/localtime:/etc/localtime:ro
-      command: ["start", "--optimized"]
+      command: ["start"]
+      #command: ["start", "--optimized", "--db-url-host=key_postgres"]
+      #command: ["start", "--db=postgres", "--db-url-host=key_postgres"]
       ports:
         - 8080
       networks:
